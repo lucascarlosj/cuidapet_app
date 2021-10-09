@@ -12,5 +12,8 @@ class UiConfig {
         colorScheme: ColorScheme.fromSwatch().copyWith(
           secondary: const Color(0xFF4CAF50),
         ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFA8CE4B),
+        )
       );
 }

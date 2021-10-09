@@ -1,3 +1,4 @@
+import 'package:cuidapet_app/app/core/helpers/environments.dart';
 import 'package:cuidapet_app/app/core/ui/extensions/size_screen_extension.dart';
 import 'package:cuidapet_app/app/core/ui/extensions/theme_extension.dart';
 import 'package:cuidapet_app/app/modules/auth/login/widgets/login_form.dart';
@@ -23,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
           height: 1.sh,
           child: Column(
             children: [
+              Text(Environments.param('base_url') ?? 'Não Configurado'),
               Image.asset(
                 'assets/images/logo.png',
                 width: 150.w,
