@@ -13,7 +13,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  @override
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +25,6 @@ class _LoginPageState extends State<LoginPage> {
           height: 1.sh,
           child: Column(
             children: [
-              Text(Environments.param('base_url') ?? 'Não Configurado'),
               Image.asset(
                 'assets/images/logo.png',
                 width: 150.w,

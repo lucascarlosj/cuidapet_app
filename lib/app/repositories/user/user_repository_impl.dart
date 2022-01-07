@@ -1,0 +1,85 @@
+import 'dart:io';
+
+import 'package:cuidapet_app/app/core/exceptions/failure.dart';
+import 'package:cuidapet_app/app/core/exceptions/user_exists_exception.dart';
+import 'package:cuidapet_app/app/core/exceptions/user_not_found_excepetion.dart';
+import 'package:cuidapet_app/app/core/helpers/logger.dart';
+import 'package:cuidapet_app/app/core/push_notification/push_notification.dart';
+import 'package:cuidapet_app/app/core/rest_client/rest_client.dart';
+import 'package:cuidapet_app/app/core/rest_client/rest_client_exception.dart';
+import 'package:cuidapet_app/app/models/confirm_login_model.dart';
+
+import './user_repository.dart';
+
+class UserRepositoryImpl implements UserRepository {
+  final RestClient _restClient;
+  final Logger _log;
+
+  UserRepositoryImpl({
+    required RestClient restClient,
+    required Logger log,
+  })  : _restClient = restClient,
+        _log = log;
+
+  @override
+  Future<void> register(String email, String password) async {
+    try {
+      await _restClient.unauth().post(
+        '/auth/register',
+        data: {
+          'email': email,
+          'password': password,
+        },
+      );
+    } on RestClientException catch (e, s) {
+      // Validando se o usuario ja existe na base de dados
+      if (e.statusCode == 400 &&
+          e.response?.data['message']
+              .toLowerCase()
+              .contains('Usuário já cadastrado')) {
+        _log.error('Usuário já cadastrado', e, s);
+        throw UserExistsException();
+      }
+
+      // Caso contrario ira aprensentar este erro
+
+      _log.error('Erro ao registar usuário', e, s);
+      throw Failure();
+    }
+  }
+
+  @override
+  Future<String> login(String login, String password) async {
+    try {
+      final result = await _restClient.auth().post('/auth/', data: {
+        'login': login,
+        'password': password,
+        'social_login': false,
+        'supplier_user': false
+      });
+      return result.data['access_token'];
+    } on RestClientException catch (e, s) {
+      _log.error('Erro ao realizar login!', e, s);
+      if (e.statusCode == 403) {
+        _log.error('Erro usuario não encontrado!', e, s);
+        throw UserNotFoundExcepetion();
+      } 
+
+      throw Failure(message: 'Erro ao realizar login!');
+    }
+  }
+
+  @override
+  Future<ConfirmLoginModel> confirmLogin() async {
+    try {
+      final deviceToken = await PushNotification().getDeviceToken();
+      final result = await _restClient.auth().patch('/auth/confirm', data: {
+        'ios_token': Platform.isIOS ? deviceToken : null,
+        'android_token': Platform.isAndroid ? deviceToken : null,
+      });
+      return ConfirmLoginModel.fromMap(result.data);
+    } on RestClientException {
+      throw Failure(message: 'Erro ao confirmar login!');
+    }
+  }
+}
