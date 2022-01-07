@@ -1,9 +1,11 @@
 import 'package:cuidapet_app/app/core/helpers/environments.dart';
 import 'package:cuidapet_app/app/core/ui/extensions/size_screen_extension.dart';
 import 'package:cuidapet_app/app/core/ui/extensions/theme_extension.dart';
+import 'package:cuidapet_app/app/modules/auth/login/login_controller.dart';
 import 'package:cuidapet_app/app/modules/auth/login/widgets/login_form.dart';
 import 'package:cuidapet_app/app/modules/auth/login/widgets/login_register_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,7 +14,7 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ModularState<LoginPage, LoginController> {
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                   )
                 ],
               ),
-              const LoginRegisterButton()
+              LoginRegisterButton(loginController: controller,)
             ],
           ),
         ),

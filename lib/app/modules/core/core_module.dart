@@ -6,6 +6,8 @@ import 'package:cuidapet_app/app/core/local_storages/shared_preferences_local_st
 import 'package:cuidapet_app/app/core/rest_client/dio_rest_client.dart';
 import 'package:cuidapet_app/app/core/rest_client/rest_client.dart';
 import 'package:cuidapet_app/app/modules/core/auth/auth_store.dart';
+import 'package:cuidapet_app/app/repositories/social/social_reposiory_impl.dart';
+import 'package:cuidapet_app/app/repositories/social/social_repository.dart';
 import 'package:cuidapet_app/app/repositories/user/user_repository.dart';
 import 'package:cuidapet_app/app/repositories/user/user_repository_impl.dart';
 import 'package:cuidapet_app/app/services/user/user_service.dart';
@@ -26,12 +28,17 @@ class CoreModule extends Module {
     Bind.lazySingleton<LocalSecurityStorage>(
         (i) => FlutterSecureStorageLocalSecurityStorageImpl(),
         export: true),
+    Bind.lazySingleton<SocialRepository>((i) => SocialRepositoryImpl(), export: true),
     Bind.lazySingleton<UserRepository>(
         (i) => UserRepositoryImpl(restClient: i(), log: i()),
         export: true),
     Bind.lazySingleton<UserService>(
-        (i) =>
-            UserServiceImpl(userRepository: i(), log: i(), localStorage: i(), localSecurityStorage: i()),
+        (i) => UserServiceImpl(
+            userRepository: i(),
+            log: i(),
+            localStorage: i(),
+            localSecurityStorage: i(),
+            socialRepository: i()),
         export: true),
   ];
 }
